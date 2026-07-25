@@ -1,5 +1,7 @@
+import { Button } from "@chakra-ui/react";
+
 function App() {
-  return <>jwt</>;
+  return <Button color={"cyan"}>Jwt</Button>;
 }
 
 export default App;
