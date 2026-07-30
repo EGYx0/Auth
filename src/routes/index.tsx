@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router";
 import Register from "../pages/Register";
 import MainLayout from "../layout/MainLayout";
-import { Text } from "@chakra-ui/react";
+import Login from "../pages/Login";
+import Home from "../pages/Home";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -10,11 +11,15 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/home",
-        element: <Text color={"white"}>Hello world</Text>,
+        element: <Home />,
       },
       {
         path: "/register",
         element: <Register />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
       },
     ],
   },

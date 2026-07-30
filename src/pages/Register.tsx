@@ -9,25 +9,47 @@ import {
   Button,
   Text,
   FormErrorMessage,
+  useToast,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router";
 import { Link as ChackraLink } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import { useRegister } from "../services/auth/auth";
 function Register() {
+  const { mutateAsync: registerUser } = useRegister();
+  const toast = useToast();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      userName: "",
+      username: "",
       email: "",
       password: "",
       role: "USER",
     },
   });
-  const onSubmit = (formData) => {
-    console.log(formData);
+
+  const onSubmit = async (formData) => {
+    try {
+      await registerUser(formData);
+      toast({
+        title: "Registeration Successful",
+        description: "You have successfully Registered",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Registeration failed",
+        description: error.response?.data?.message || "An Error occured",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
   };
   return (
     <Box
@@ -45,16 +67,16 @@ function Register() {
       </Heading>
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack spacing={4}>
-          <FormControl isInvalid={errors.userName}>
+          <FormControl isInvalid={errors.username}>
             <FormLabel>UserName </FormLabel>
             <Input
               type="text"
               placeholder="Enter your user name"
               borderColor={"gray.300"}
-              {...register("userName", { required: "UserName is required" })}
+              {...register("username", { required: "UserName is required" })}
             />
             <FormErrorMessage color={"red"}>
-              {errors.userName?.message}
+              {errors.username?.message}
             </FormErrorMessage>
           </FormControl>
 
@@ -90,8 +112,8 @@ function Register() {
               color={"gray.500"}
               {...register("role", { required: "role is required" })}
             >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
+              <option value="USER">User</option>
+              <option value="ADMIN">Admin</option>
             </Select>
             <FormErrorMessage color={"red"}>
               {errors.role?.message}
@@ -101,6 +123,7 @@ function Register() {
           <Button type="submit" colorScheme="cyan" color={"black"} width="full">
             Register
           </Button>
+
           <Text fontSize="sm" color={"gray.600"}>
             Already have an account?
             <ChackraLink

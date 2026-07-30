@@ -6,11 +6,27 @@ import {
   HStack,
   Container,
   Text,
+  ButtonGroup,
 } from "@chakra-ui/react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Logo from "../assets/ecommerce-logo.svg";
+import { useLogout } from "../services/auth/auth";
+import { useAuthStore, useAuthTokenStore } from "../store/authStore";
 
 export const Navbar = () => {
+  const { user, isAuthenticated } = useAuthStore();
+  const { clearTokens } = useAuthTokenStore();
+  const { mutateAsync: logoutUser } = useLogout();
+  const navigate = useNavigate();
+  const logoutHandler = async () => {
+    try {
+      await logoutUser();
+      clearTokens();
+      navigate("/login");
+    } catch (error) {
+      alert(error?.response?.data?.message || "logout failed");
+    }
+  };
   return (
     <Box
       boxShadow="0 4px 10px rgba(0, 0, 0, 0.2)" // black shadow with opacity
@@ -63,30 +79,39 @@ export const Navbar = () => {
           </Box>
 
           {/* Navigation Buttons */}
-          <HStack
-            display={{ base: "none", md: "flex" }}
-            spacing={{ base: 2, md: 4 }}
-            mt={{ base: 2, md: 0 }}
-          >
-            <Link to="/login">
-              <Button
-                colorScheme="cyan"
-                color="black"
-                size={{ base: "sm", md: "md" }}
-              >
-                Login
+          {isAuthenticated ? (
+            <HStack>
+              <Text color={"cyan"}>Welcome {user.username}</Text>
+              <Button colorScheme="cyan" onClick={logoutHandler}>
+                Logout
               </Button>
-            </Link>
-            <Link to="/register">
-              <Button
-                variant="outline"
-                colorScheme="cyan"
-                size={{ base: "sm", md: "md" }}
-              >
-                Register
-              </Button>
-            </Link>
-          </HStack>
+            </HStack>
+          ) : (
+            <HStack
+              display={{ base: "none", md: "flex" }}
+              spacing={{ base: 2, md: 4 }}
+              mt={{ base: 2, md: 0 }}
+            >
+              <Link to="/login">
+                <Button
+                  colorScheme="cyan"
+                  color="black"
+                  size={{ base: "sm", md: "md" }}
+                >
+                  Login
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button
+                  variant="outline"
+                  colorScheme="cyan"
+                  size={{ base: "sm", md: "md" }}
+                >
+                  Register
+                </Button>
+              </Link>
+            </HStack>
+          )}
         </Flex>
       </Container>
     </Box>
