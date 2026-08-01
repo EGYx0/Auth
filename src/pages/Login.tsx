@@ -42,7 +42,7 @@ function Login() {
       const { accessToken, refreshToken } = response.data;
       login(user);
       setTokens(accessToken, refreshToken);
-      navigate("/home");
+      navigate("/product");
     } catch (error) {
       alert(error?.response?.data?.message || "Login failed");
     }
